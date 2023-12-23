@@ -29,7 +29,8 @@ export class XmlFile {
 
 		// Muestra los resultados
 		// console.log(matches);
-		console.log(this);
+		// console.log(this._getTags());
+		this._getTags();
 	}
 
 	// ANCHOR - Methods
@@ -51,5 +52,33 @@ export class XmlFile {
 		const encodingPattern = /encoding\s*=\s*"(.*?)"/;
 		const encoding = this.xmlTag?.match(encodingPattern)?.[1] ?? null;
 		return encoding;
+	}
+
+	private _getTags() {
+		const elementPattern = /(<[^\/>]+\/>|<[^>]+>)/g;
+		let matches = this.content.trim().match(elementPattern);
+		if (this.xmlTag) {
+			matches?.shift();
+		}
+		const elements = matches ?? [];
+		let tags: string[] = [];
+		let searchTag = '';
+		const getInnerTag = () => {};
+		console.log(elements);
+		for (let i = 0; i < elements.length; i++) {
+			const element = elements[i];
+
+			const inner = element.replace(/[<\/\>]/g, '')?.trim() ?? '';
+			const nameTag = inner.split(' ')[0];
+			console.log(nameTag);
+            if (element.includes('/>')) {
+                tags.push(nameTag);
+            } else {
+                searchTag = nameTag;
+                let counter = 1;
+                
+            }
+		}
+		return tags;
 	}
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <library>
   <book>
-    <title>El Señor de los Anillos</title>
+    <title name="anillos">El Señor de los Anillos</title>
     <author>J.R.R. Tolkien</author>
     <genre>Fantasía</genre>
     <price>29.99</price>
@@ -16,5 +16,7 @@
     <title>National Geographic</title>
     <category>Science</category>
     <price>5.99</price>
+    <other name="algo" type="unknown" />
   </magazine>
 </library>
+<category name="Science" year="1990"/>
