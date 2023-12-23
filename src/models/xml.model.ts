@@ -5,8 +5,9 @@ export class XmlFile {
 	// ANCHOR - Properties
 	public readonly name: string;
 	public readonly fileName: string;
-	public readonly fileText: string;
+	public readonly content: string;
 	public readonly url: string;
+	public readonly extension: string;
 	public readonly type: FileType = 'xml';
 	public readonly version: string;
 
@@ -16,32 +17,25 @@ export class XmlFile {
 	// ANCHOR - Constructor
 	constructor(url: string) {
 		this.url = url;
-		this.fileText = getFileText(url);
+		this.content = getFileText(url);
 		this.fileName = url.split('/').pop() || '';
-		this.name = this.fileName.split('.').shift() || '';
+		[this.name, this.extension] = this.fileName.split('.');
 
 		// TODO: get version from xml file
 		this.version = '1.0';
+
+        // Expresión regular para encontrar los bloques XML
+const regex = /<[^>]+>[^<]*<\/[^>]+>|<[^>]+\/>/g;
+
+// Encuentra todas las coincidencias en el string XML
+const matches = this.content.match(regex);
+
+// Muestra los resultados
+console.log(matches);
 	}
 
 	// ANCHOR - Methods
-	public isXmlFile(): boolean {
-		try {
-			const parser = new DOMParser();
-			const xmlDoc = parser.parseFromString(
-				this.fileText,
-				'application/xml'
-			);
-			// Si no hay errores al parsear, entonces el archivo tiene un formato XML válido
-			console.log('El archivo tiene un formato XML válido.');
-			console.log(xmlDoc);
-			return true;
-		} catch (error) {
-			console.error(
-				'El archivo no tiene un formato XML válido:',
-				error.message
-			);
-			return false;
-		}
-	}
+    private _createTags = () => {
+
+    }
 }
