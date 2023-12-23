@@ -3,12 +3,10 @@ import { FileEncodingType } from '../interfaces/basic.interface';
 
 export const getFileText = (
 	path: string,
-	options: {
-		encoding: FileEncodingType;
+	options?: {
+		encoding?: FileEncodingType;
 	}
 ): string => {
-	const { encoding = 'utf8' } = options;
-	const fileText = fs.readFileSync(path, encoding);
-	console.log('fileText', fileText);
-	return fileText;
+	const { encoding = 'utf8' } = options || {};
+	return fs.readFileSync(path, encoding);
 };

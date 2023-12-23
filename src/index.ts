@@ -1,4 +1,6 @@
 import * as helpers from './helpers/helpers';
 
 
-helpers.getFileText('./examples/example01.xml')
+const xmlFile = helpers.getFileText('./src/examples/example01.xml')
+
+console.log(xmlFile);
