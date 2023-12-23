@@ -1,0 +1,14 @@
+{
+  "name": "parse-xml-json",
+  "version": "1.0.0",
+  "description": "Library to parse xml to json and json to xml",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "npx tsx src/index.ts",
+    "watch" : "npx tsx watch src/index.ts"
+  },
+  "author": "Cartago <cv2cartago@gmail.com> (https://github.com/CartagoGit)",
+  "license": "MIT"
+}
