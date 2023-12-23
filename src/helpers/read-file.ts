@@ -7,6 +7,7 @@ export const getFileText = (
 		encoding?: FileEncodingType;
 	}
 ): string => {
-	const { encoding = 'utf8' } = options || {};
+	let { encoding = 'utf8' } = options || {};
+    encoding = encoding.toLowerCase() as FileEncodingType;
 	return fs.readFileSync(path, encoding);
 };
