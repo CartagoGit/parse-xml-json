@@ -1,41 +1,52 @@
 import { getFileText } from '../helpers/read-file';
 import { FileType } from '../interfaces/basic.interface';
 
-export class XmlFile {
+interface XmlProps {
+	name: string;
+	fileName: string;
+	content: string;
+	src: string;
+	extension: string;
+	type: FileType;
+	version: string;
+	xmlTag: string | null;
+	encoding: string | null;
+	children: string[];
+	parent: XmlFile | XmlChild | null;
+	level: number;
+}
+
+export class XmlFile implements XmlProps {
 	// ANCHOR - Properties
 	public readonly name: string;
 	public readonly fileName: string;
 	public readonly content: string;
-	public readonly url: string;
+	public readonly src: string;
 	public readonly extension: string;
 	public readonly type: FileType = 'xml';
 	public readonly version: string;
 	public readonly xmlTag: string | null = null;
 	public readonly encoding;
+	// public readonly children: XmlItem[] = [];
+	public readonly children: string[] = [];
+	public readonly parent: XmlFile | null = null;
+	public readonly level = 0;
 
 	// ANCHOR - Constructor
-	constructor(url: string) {
-		this.url = url;
-		this.content = getFileText(url);
-		this.fileName = url.split('/').pop() || '';
+	constructor(src: string) {
+		this.src = src;
+		this.content = getFileText(this.src);
+		this.fileName = this.src.split('/').pop() || '';
 		[this.name, this.extension] = this.fileName.split('.');
 		this.xmlTag = this._getXmlTag();
 		this.version = this._getVersionXml();
 		this.encoding = this._getEncodingXml();
+		this.children = this._getChildrenTags();
 
-		// // Expresión regular para encontrar los bloques XML
-		// let regex = /<[^>]*>[^<]*<\/[^>]*>|<[^\/>]*\/>/g;
-		// let matches = this.content.match(regex);
-
-		// Muestra los resultados
-		// console.log(matches);
-		// console.log(this._getTags());
-		this._getTags();
+		console.log(this);
 	}
 
 	// ANCHOR - Methods
-	private _createTags() {}
-
 	private _getXmlTag(): string | null {
 		const xmlTagPattern = /<\?xml.*\?>/;
 		const xmlTag = this.content.match(xmlTagPattern)?.[0] ?? null;
@@ -54,7 +65,7 @@ export class XmlFile {
 		return encoding;
 	}
 
-	private _getTags() {
+	private _getChildrenTags(): string[] {
 		const elementPattern = /(<[^\/>]+\/>|<[^>]+>)/g;
 		let matches = this.content.trim().match(elementPattern);
 		if (this.xmlTag) {
@@ -62,23 +73,34 @@ export class XmlFile {
 		}
 		const elements = matches ?? [];
 		let tags: string[] = [];
-		let searchTag = '';
-		const getInnerTag = () => {};
-		console.log(elements);
 		for (let i = 0; i < elements.length; i++) {
 			const element = elements[i];
-
 			const inner = element.replace(/[<\/\>]/g, '')?.trim() ?? '';
 			const nameTag = inner.split(' ')[0];
-			console.log(nameTag);
-            if (element.includes('/>')) {
-                tags.push(nameTag);
-            } else {
-                searchTag = nameTag;
-                let counter = 1;
-                
-            }
+			if (element.includes('/>')) {
+				tags.push(nameTag);
+			} else {
+				const searchTag = nameTag;
+				let counter = 1;
+				for (let j = i + 1; j < elements.length; j++) {
+					const elementInner = elements[j];
+					if (elementInner.includes(searchTag)) {
+						if (elementInner.includes('/')) {
+							counter--;
+							if (counter === 0) {
+								tags.push(nameTag);
+								i = j;
+								break;
+							} else counter++;
+						}
+					}
+				}
+			}
 		}
 		return tags;
 	}
+}
+
+class XmlChild {
+	
 }
