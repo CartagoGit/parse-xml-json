@@ -5,6 +5,12 @@
     <author>J.R.R. Tolkien</author>
     <genre>Fantasía</genre>
     <price>29.99</price>
+    <book>
+      <title name="anillos">El Señor de los Anillos</title>
+      <author>J.R.R. Tolkien</author>
+      <genre>Fantasía</genre>
+      <price>29.99</price>
+    </book>
   </book>
   <book>
     <title>Cien años de soledad</title>
@@ -19,9 +25,9 @@
     <other name="algo" type="unknown" />
   </magazine>
 </library>
-<library>
+<library name="Academia de la lengua">
   <book>
-    <title name="anillos">El Señor de los Anillos</title>
+    <title name="anillos">CUCU El Señor de los Anillos</title>
     <author>J.R.R. Tolkien</author>
     <genre>Fantasía</genre>
     <price>29.99</price>
@@ -36,7 +42,7 @@
     <title>National Geographic</title>
     <category>Science</category>
     <price>5.99</price>
-    <other name="algo" type="unknown" />
+    <other name="Deverda" type="EsteSiLoSe" />
   </magazine>
 </library>
 <category name="Science" year="1990"/>
