@@ -33,9 +33,16 @@ export class XmlFile implements XmlProps {
 
 	// ANCHOR - Constructor
 	constructor(data: { src?: string; text?: string }) {
-		const { src, text } = data;
+		let { src, text } = data;
+		if (!!text) {
+			text = text.trim().replace(/<!--[\s\S]*?-->/g, ''); // Remove comments
+		}
 		this.src = text ? 'Test text' : src ?? '';
-		this.content = text ?? getFileText(this.src);
+		this.content =
+			text ??
+			getFileText(this.src)
+				.trim()
+				.replace(/<!--[\s\S]*?-->/g, ''); // Remove comments
 		this.fileName = this.src.split('/').pop() || '';
 		[this.name, this.extension] = this.fileName.split('.');
 		this.xmlTag = this._getXmlTag();
@@ -66,7 +73,7 @@ export class XmlFile implements XmlProps {
 
 class XmlChild {
 	public readonly name: string;
-	public readonly content: string;
+	public readonly content: string | null;
 	public readonly children: XmlChild[] | null = null;
 	public readonly parent: XmlFile | XmlChild | null = null;
 	public readonly level;
@@ -74,7 +81,7 @@ class XmlChild {
 	public readonly closeTag: string | null = null;
 	public readonly isSelfClosing: boolean;
 	public readonly attributes: Record<string, any> = {};
-	public readonly isLastTag : boolean;
+	public readonly isLastTag: boolean;
 
 	constructor(props: {
 		tag: string;
@@ -82,7 +89,8 @@ class XmlChild {
 		parent?: XmlFile | XmlChild;
 		level: number;
 	}) {
-		const { tag, content, parent, level } = props;
+		let { tag, content, parent, level } = props;
+		content = content.trim().replace(/<!--[\s\S]*?-->/g, ''); // Remove comments
 		this.name = tag.split(' ')[0];
 		this.attributes = this._getAttributes(tag);
 		this.isSelfClosing = content.endsWith('/>');
@@ -90,7 +98,9 @@ class XmlChild {
 		this.openTag = this.isSelfClosing ? content : `<${tag}>`;
 		this.closeTag = this.isSelfClosing ? null : `</${this.name}>`;
 		this.parent = parent ?? null;
-		this.content = content.replaceAll(/></g, '>\r\n<');
+		this.content = this.isSelfClosing
+			? null
+			: content.replaceAll(/></g, '>\r\n<');
 		this.level = level;
 
 		if (
@@ -100,7 +110,7 @@ class XmlChild {
 		) {
 			this.children = XmlHelpers.getChildrenTags(this);
 		}
-		this.isLastTag = !this.children || this.children.length === 0 ;
+		this.isLastTag = !this.children || this.children.length === 0;
 	}
 
 	// ANCHOR - Methods
@@ -127,6 +137,7 @@ class XmlChild {
 class XmlHelpers {
 	public static getChildrenTags(xmlItem: XmlFile | XmlChild): XmlChild[] {
 		const { content, level } = xmlItem;
+		if (!content) return [];
 		const xmlTag = xmlItem instanceof XmlFile ? xmlItem.xmlTag : null;
 		let text = content
 			.replace(/[\n\r]/g, '')
@@ -136,7 +147,7 @@ class XmlHelpers {
 		const tags: XmlChild[] = [];
 		while (!!text) {
 			const indexEnd = text.indexOf('>');
-			if(indexEnd === -1) break;
+			if (indexEnd === -1) break;
 			const openTag = text.slice(0, indexEnd + 1);
 			if (openTag.includes('/>')) {
 				tags.push(
@@ -162,12 +173,12 @@ class XmlHelpers {
 						'</' + nameTag + '>'
 					);
 					if (openSameTag !== -1 && openSameTag < closeSameTag) {
-						accCloseSomeTag += closeSameTag +1;
+						accCloseSomeTag += closeSameTag + 1;
 						textSearching = textSearching.slice(closeSameTag + 1);
 					} else {
 						const textTag = textForTag.slice(
 							0,
-							accCloseSomeTag + closeSameTag 
+							accCloseSomeTag + closeSameTag
 						);
 						textSearching = textSearching.slice(closeSameTag + 1);
 						const lastTagIndex = textSearching.indexOf('>');

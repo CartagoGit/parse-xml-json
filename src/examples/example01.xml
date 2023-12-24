@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<library>
+<!-- <library>
   <book>
     <title name="segunda guerra mundial">Malditos bastardos</title>
     <author>Tarantingo</author>
@@ -24,7 +24,7 @@
     <price>5.99</price>
     <other name="algo" type="unknown" pepo=98/>
   </magazine>
-</library>
+</library> -->
 <library name="Academia de la lengua" otraCosa="lo que sea"  pepo=98 alcahuere=true>
   <book>
     <title name="anillos">CUCU El Señor de los Anillos</title>
@@ -32,7 +32,7 @@
     <genre>Fantasía</genre>
     <price>29.99</price>
   </book>
-  <book>
+  <!-- <book>
     <title>Cien años de soledad</title>
     <author>Gabriel García Márquez</author>
     <genre>Realismo mágico</genre>
@@ -43,6 +43,6 @@
     <category>Science</category>
     <price>5.99</price>
     <other name="Deverda" type="EsteSiLoSe" />
-  </magazine>
+  </magazine> -->
 </library>
 <category name="Science" year="1990"/>
