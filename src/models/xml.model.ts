@@ -1,4 +1,5 @@
 import { getFileText } from '../helpers/files-helpers';
+import { patternCommentsXml } from '../helpers/helpers';
 import { FileProps, FileType } from '../interfaces/basic.interface';
 
 interface XmlProps extends FileProps<XmlFile, XmlChild> {
@@ -27,14 +28,12 @@ export class XmlFile implements XmlProps {
 	constructor(data: { src?: string; text?: string }) {
 		let { src, text } = data;
 		if (!!text) {
-			text = text.trim().replace(/<!--[\s\S]*?-->/g, ''); // Remove comments
+			text = text.trim().replace(patternCommentsXml, ''); // Remove comments
 		}
-		this.src = text ? 'Test text' : src ?? '';
+		this.src = text ? 'Test xml text' : src ?? '';
 		this.content =
 			text ??
-			getFileText(this.src)
-				.trim()
-				.replace(/<!--[\s\S]*?-->/g, ''); // Remove comments
+			getFileText(this.src).trim().replace(patternCommentsXml, ''); // Remove comments
 		this.fileName = this.src.split('/').pop() || '';
 		[this.name, this.extension] = this.fileName.split('.');
 		this.xmlTag = this._getXmlTag();
@@ -91,7 +90,7 @@ class XmlChild {
 		level: number;
 	}) {
 		let { tag, content, parent, level } = props;
-		content = content.trim().replace(/<!--[\s\S]*?-->/g, ''); // Remove comments
+		content = content.trim().replace(patternCommentsXml, ''); // Remove comments
 		this.name = tag.split(' ')[0];
 		this.attributes = this._getAttributes(tag);
 		this.isSelfClosing = content.endsWith('/>');
