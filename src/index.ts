@@ -23,4 +23,6 @@ const xmlFile = new XmlFile({ src: './src/examples/example01.xml' });
 // console.log(xmlFile2.children?.[0]?.children?.[4]);
 // console.log(xmlFile2.children?.[0]);
 // xmlFile.isXmlFile();
-console.log(xmlFile);
+// console.log(xmlFile);
+
+console.log(xmlFile.toJson().tags.library[0].book[0]);

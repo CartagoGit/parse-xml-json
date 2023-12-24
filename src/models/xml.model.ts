@@ -69,6 +69,15 @@ export class XmlFile implements XmlProps {
 		const encoding = this.xmlTag?.match(encodingPattern)?.[1] ?? null;
 		return encoding;
 	}
+
+	public toJson(): {
+		initType: string;
+		xml: { version: string; encoding: string };
+		file: { name: string; path: string; extension: string };
+		tags: Record<string, any[]>;
+	} {
+		return XmlHelpers.xmlToJson(this) as any;
+	}
 }
 
 class XmlChild {
@@ -80,7 +89,7 @@ class XmlChild {
 	public readonly openTag: string;
 	public readonly closeTag: string | null = null;
 	public readonly isSelfClosing: boolean;
-	public readonly attributes: Record<string, any> = {};
+	public readonly attributes: Record<string, any> | null = null;
 	public readonly isLastTag: boolean;
 
 	constructor(props: {
@@ -114,7 +123,9 @@ class XmlChild {
 	}
 
 	// ANCHOR - Methods
-	private _getAttributes(nameAndAtributesTag: string): Record<string, any> {
+	private _getAttributes(
+		nameAndAtributesTag: string
+	): Record<string, any> | null {
 		const regex = /\b(\w+)\s*=\s*(?:"([^"]*)"|(\d+)|(true|false))\s*/g;
 		let attributes: Record<string, any> = {};
 		let match;
@@ -130,11 +141,16 @@ class XmlChild {
 					: undefined;
 			attributes[propertyName] = value;
 		}
-		return attributes;
+		return Object.keys(attributes).length === 0 ? null : attributes;
+	}
+
+	public toJson(): Record<string, any> {
+		return XmlHelpers.xmlToJson(this);
 	}
 }
 
 class XmlHelpers {
+	// ANCHOR : Static Methods
 	public static getChildrenTags(xmlItem: XmlFile | XmlChild): XmlChild[] {
 		const { content, level } = xmlItem;
 		if (!content) return [];
@@ -198,4 +214,53 @@ class XmlHelpers {
 		}
 		return tags;
 	}
+
+	public static xmlToJson = (
+		xml: XmlChild | XmlFile
+	): Record<string, any> => {
+		const { children, content } = xml;
+		const attributes = xml instanceof XmlChild ? xml.attributes : undefined;
+		const json: Record<string, any> = {};
+		if (xml instanceof XmlFile) {
+			json['initType'] = xml.type;
+			json['xml'] = {
+				version: xml.version,
+				encoding: xml.encoding,
+			};
+			json['file'] = {
+				name: xml.fileName,
+				path: xml.src,
+				extension: xml.extension,
+			};
+		} else {
+			json['isLastTag'] = xml.isLastTag;
+		}
+		if (attributes) json['attributes'] = attributes;
+		if (children) {
+			if (xml instanceof XmlFile) {
+				json['tags'] = {};
+			}
+			for (const child of children) {
+				if (xml instanceof XmlFile) {
+					json['tags'][child.name] = [
+						...(json['tags'][child.name] ?? []),
+						XmlHelpers.xmlToJson(child),
+					];
+				} else {
+					json[child.name] = [
+						...(json[child.name] ?? []),
+						XmlHelpers.xmlToJson(child),
+					];
+				}
+			}
+		} else {
+			if (xml instanceof XmlChild) {
+				xml.isSelfClosing || !content
+					? undefined
+					: (json['content'] = content);
+				json['isSelfClosing'] = xml.isSelfClosing;
+			}
+		}
+		return { ...json };
+	};
 }
