@@ -32,7 +32,7 @@ export class XmlFile implements XmlProps {
 	public readonly level = 0;
 
 	// ANCHOR - Constructor
-	constructor(data: {src?: string, text?: string}) {
+	constructor(data: { src?: string; text?: string }) {
 		const { src, text } = data;
 		this.src = text ? 'Test text' : src ?? '';
 		this.content = text ?? getFileText(this.src);
@@ -42,8 +42,6 @@ export class XmlFile implements XmlProps {
 		this.version = this._getVersionXml();
 		this.encoding = this._getEncodingXml();
 		this.children = XmlHelpers.getChildrenTags(this);
-
-		// console.log(this);
 	}
 
 	// ANCHOR - Methods
@@ -76,6 +74,7 @@ class XmlChild {
 	public readonly closeTag: string | null = null;
 	public readonly isSelfClosing: boolean;
 	public readonly attributes: Record<string, any> = {};
+	public readonly isLastTag : boolean;
 
 	constructor(props: {
 		tag: string;
@@ -89,17 +88,19 @@ class XmlChild {
 		this.isSelfClosing = content.endsWith('/>');
 
 		this.openTag = this.isSelfClosing ? content : `<${tag}>`;
-		// this.openTag = 'ee'
 		this.closeTag = this.isSelfClosing ? null : `</${this.name}>`;
-		// this.closeTag = 'asdsad'
 		this.parent = parent ?? null;
 		this.content = content.replaceAll(/></g, '>\r\n<');
 		this.level = level;
 
-		if (!this.isSelfClosing && content.includes('<') && content.trim().length > 0) {
+		if (
+			!this.isSelfClosing &&
+			content.includes('<') &&
+			content.trim().length > 0
+		) {
 			this.children = XmlHelpers.getChildrenTags(this);
 		}
-		console.log(this);
+		this.isLastTag = !this.children || this.children.length === 0 ;
 	}
 
 	// ANCHOR - Methods
@@ -135,13 +136,14 @@ class XmlHelpers {
 		const tags: XmlChild[] = [];
 		while (!!text) {
 			const indexEnd = text.indexOf('>');
+			if(indexEnd === -1) break;
 			const openTag = text.slice(0, indexEnd + 1);
 			if (openTag.includes('/>')) {
 				tags.push(
 					new XmlChild({
 						tag: openTag.replace(/[<\/\>]/g, '')?.trim() ?? '',
 						content: openTag,
-						// parent: this,
+						parent: xmlItem,
 						level: level + 1,
 					})
 				);
@@ -152,24 +154,32 @@ class XmlHelpers {
 				const nameTag = nameAndAtributesTag.split(' ')[0];
 
 				let textSearching = text.slice(indexEnd + 1);
-
+				let textForTag = textSearching;
+				let accCloseSomeTag = 0;
 				while (true) {
 					const openSameTag = textSearching.indexOf('<' + nameTag);
-					const closeSameTag = textSearching.indexOf('</' + nameTag);
+					const closeSameTag = textSearching.indexOf(
+						'</' + nameTag + '>'
+					);
 					if (openSameTag !== -1 && openSameTag < closeSameTag) {
+						accCloseSomeTag += closeSameTag +1;
 						textSearching = textSearching.slice(closeSameTag + 1);
 					} else {
-						const textTag = textSearching.slice(0, closeSameTag);
-						const xmlChild = new XmlChild({
-							tag: nameAndAtributesTag,
-							content: textTag,
-							// parent: this,
-							level: level + 1,
-						});
-						tags.push(xmlChild);
+						const textTag = textForTag.slice(
+							0,
+							accCloseSomeTag + closeSameTag 
+						);
 						textSearching = textSearching.slice(closeSameTag + 1);
 						const lastTagIndex = textSearching.indexOf('>');
 						text = textSearching.slice(lastTagIndex + 1);
+
+						const xmlChild = new XmlChild({
+							tag: nameAndAtributesTag,
+							content: textTag,
+							parent: xmlItem,
+							level: level + 1,
+						});
+						tags.push(xmlChild);
 						break;
 					}
 				}

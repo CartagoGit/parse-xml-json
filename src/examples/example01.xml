@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <library>
   <book>
-    <title name="anillos">El Señor de los Anillos</title>
-    <author>J.R.R. Tolkien</author>
-    <genre>Fantasía</genre>
+    <title name="segunda guerra mundial">Malditos bastardos</title>
+    <author>Tarantingo</author>
+    <genre>Violencia</genre>
     <price>29.99</price>
     <book>
       <title name="anillos">El Señor de los Anillos</title>
-      <author>Pepote
-      </author>
+      <author>Pepote</author>
       <genre>Fantasía</genre>
       <price>299.99</price>
     </book>
