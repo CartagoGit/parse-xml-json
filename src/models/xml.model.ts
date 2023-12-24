@@ -32,17 +32,18 @@ export class XmlFile implements XmlProps {
 	public readonly level = 0;
 
 	// ANCHOR - Constructor
-	constructor(src: string) {
-		this.src = src;
-		this.content = getFileText(this.src);
+	constructor(data: {src?: string, text?: string}) {
+		const { src, text } = data;
+		this.src = text ? 'Test text' : src ?? '';
+		this.content = text ?? getFileText(this.src);
 		this.fileName = this.src.split('/').pop() || '';
 		[this.name, this.extension] = this.fileName.split('.');
 		this.xmlTag = this._getXmlTag();
 		this.version = this._getVersionXml();
 		this.encoding = this._getEncodingXml();
-		this.children = this._getChildrenTags();
+		this.children = XmlHelpers.getChildrenTags(this);
 
-		console.log(this);
+		// console.log(this);
 	}
 
 	// ANCHOR - Methods
@@ -63,13 +64,74 @@ export class XmlFile implements XmlProps {
 		const encoding = this.xmlTag?.match(encodingPattern)?.[1] ?? null;
 		return encoding;
 	}
+}
 
-	private _getChildrenTags(): XmlChild[] {
-		let text = this.content
+class XmlChild {
+	public readonly name: string;
+	public readonly content: string;
+	public readonly children: XmlChild[] | null = null;
+	public readonly parent: XmlFile | XmlChild | null = null;
+	public readonly level;
+	public readonly openTag: string;
+	public readonly closeTag: string | null = null;
+	public readonly isSelfClosing: boolean;
+	public readonly attributes: Record<string, any> = {};
+
+	constructor(props: {
+		tag: string;
+		content: string;
+		parent?: XmlFile | XmlChild;
+		level: number;
+	}) {
+		const { tag, content, parent, level } = props;
+		this.name = tag.split(' ')[0];
+		this.attributes = this._getAttributes(tag);
+		this.isSelfClosing = content.endsWith('/>');
+
+		this.openTag = this.isSelfClosing ? content : `<${tag}>`;
+		// this.openTag = 'ee'
+		this.closeTag = this.isSelfClosing ? null : `</${this.name}>`;
+		// this.closeTag = 'asdsad'
+		this.parent = parent ?? null;
+		this.content = content.replaceAll(/></g, '>\r\n<');
+		this.level = level;
+
+		if (!this.isSelfClosing && content.includes('<') && content.trim().length > 0) {
+			this.children = XmlHelpers.getChildrenTags(this);
+		}
+		console.log(this);
+	}
+
+	// ANCHOR - Methods
+	private _getAttributes(nameAndAtributesTag: string): Record<string, any> {
+		const regex = /\b(\w+)\s*=\s*(?:"([^"]*)"|(\d+)|(true|false))\s*/g;
+		let attributes: Record<string, any> = {};
+		let match;
+		while ((match = regex.exec(nameAndAtributesTag)) !== null) {
+			const propertyName = match[1];
+			const value =
+				match[2] !== undefined
+					? match[2]
+					: match[3] !== undefined
+					? parseInt(match[3])
+					: match[4] !== undefined
+					? match[4] === 'true'
+					: undefined;
+			attributes[propertyName] = value;
+		}
+		return attributes;
+	}
+}
+
+class XmlHelpers {
+	public static getChildrenTags(xmlItem: XmlFile | XmlChild): XmlChild[] {
+		const { content, level } = xmlItem;
+		const xmlTag = xmlItem instanceof XmlFile ? xmlItem.xmlTag : null;
+		let text = content
 			.replace(/[\n\r]/g, '')
 			.replace(/>\s*</g, '><')
 			.trim();
-		if (this.xmlTag) text = text.replace(this.xmlTag, '');
+		if (xmlTag) text = text.replace(xmlTag, '');
 		const tags: XmlChild[] = [];
 		while (!!text) {
 			const indexEnd = text.indexOf('>');
@@ -79,13 +141,16 @@ export class XmlFile implements XmlProps {
 					new XmlChild({
 						tag: openTag.replace(/[<\/\>]/g, '')?.trim() ?? '',
 						content: openTag,
-						parent: this,
-						level: this.level + 1,
+						// parent: this,
+						level: level + 1,
 					})
 				);
 				text = text.slice(indexEnd + 1);
 			} else {
-				const nameTag = openTag.replace(/[<\/\>]/g, '')?.trim() ?? '';
+				const nameAndAtributesTag =
+					openTag.replace(/[<\/\>]/g, '')?.trim() ?? '';
+				const nameTag = nameAndAtributesTag.split(' ')[0];
+
 				let textSearching = text.slice(indexEnd + 1);
 
 				while (true) {
@@ -96,10 +161,10 @@ export class XmlFile implements XmlProps {
 					} else {
 						const textTag = textSearching.slice(0, closeSameTag);
 						const xmlChild = new XmlChild({
-							tag: nameTag,
+							tag: nameAndAtributesTag,
 							content: textTag,
-							parent: this,
-							level: this.level + 1,
+							// parent: this,
+							level: level + 1,
 						});
 						tags.push(xmlChild);
 						textSearching = textSearching.slice(closeSameTag + 1);
@@ -110,37 +175,6 @@ export class XmlFile implements XmlProps {
 				}
 			}
 		}
-
 		return tags;
-	}
-}
-
-class XmlChild {
-	public readonly name: string;
-	public readonly content: string;
-	public readonly children: XmlChild[] = [];
-	public readonly parent: XmlFile | XmlChild | null = null;
-	public readonly level;
-	public readonly openTag: string;
-	public readonly closeTag: string | null = null;
-	public readonly isSelfClosing: boolean;
-
-	constructor(props: {
-		tag: string;
-		content: string;
-		parent: XmlFile | XmlChild;
-		level: number;
-	}) {
-		const { tag, content, parent, level } = props;
-		this.name = tag.split(' ')[0];
-		this.isSelfClosing = content.endsWith('/>');
-
-		// this.openTag = this.isSelfClosing ? content : `<${tag}>`;
-		this.openTag = 'ee'
-		// this.closeTag = this.isSelfClosing ? null : `</${this.name}>`;
-		this.closeTag = 'asdsad'
-		this.parent = parent;
-		this.content = content;
-		this.level = level;
 	}
 }

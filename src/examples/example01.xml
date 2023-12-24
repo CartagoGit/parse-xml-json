@@ -7,9 +7,10 @@
     <price>29.99</price>
     <book>
       <title name="anillos">El Señor de los Anillos</title>
-      <author>J.R.R. Tolkien</author>
+      <author>Pepote
+      </author>
       <genre>Fantasía</genre>
-      <price>29.99</price>
+      <price>299.99</price>
     </book>
   </book>
   <book>
@@ -22,10 +23,10 @@
     <title>National Geographic</title>
     <category>Science</category>
     <price>5.99</price>
-    <other name="algo" type="unknown" />
+    <other name="algo" type="unknown" pepo=98/>
   </magazine>
 </library>
-<library name="Academia de la lengua">
+<library name="Academia de la lengua" otraCosa="lo que sea"  pepo=98 alcahuere=true>
   <book>
     <title name="anillos">CUCU El Señor de los Anillos</title>
     <author>J.R.R. Tolkien</author>
