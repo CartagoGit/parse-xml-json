@@ -1,19 +1,10 @@
-import { getFileText } from '../helpers/read-file';
-import { FileType } from '../interfaces/basic.interface';
+import { getFileText } from '../helpers/files-helpers';
+import { FileProps, FileType } from '../interfaces/basic.interface';
 
-interface XmlProps {
-	name: string;
-	fileName: string;
-	content: string;
-	src: string;
-	extension: string;
-	type: FileType;
+interface XmlProps extends FileProps<XmlFile, XmlChild> {
 	version: string;
 	xmlTag: string | null;
 	encoding: string | null;
-	children: XmlChild[];
-	parent: XmlFile | XmlChild | null;
-	level: number;
 }
 
 export class XmlFile implements XmlProps {
@@ -32,6 +23,7 @@ export class XmlFile implements XmlProps {
 	public readonly level = 0;
 
 	// ANCHOR - Constructor
+	// Can be a source for a file or a string text to parse
 	constructor(data: { src?: string; text?: string }) {
 		let { src, text } = data;
 		if (!!text) {

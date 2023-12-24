@@ -13,3 +13,15 @@ export type FileEncodingType =
 	| 'utf-8'
 	| 'binary'
 	| 'latin1';
+
+export interface FileProps<P, C> {
+	name: string;
+	fileName: string;
+	content: string;
+	src: string;
+	extension: string;
+	type: FileType;
+	children: C[];
+	parent: P | C | null;
+	level: number;
+}
