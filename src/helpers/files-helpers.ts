@@ -1,7 +1,6 @@
 import fs from 'fs';
+
 import { FileEncodingType, FileType } from '../interfaces/basic.interface';
-import { XmlFile } from '../models/xml.model';
-import { JsonFile } from '../models/json.model';
 
 export const getFileText = (
 	path: string,
@@ -14,16 +13,15 @@ export const getFileText = (
 	return fs.readFileSync(path, encoding);
 };
 
-export const createFile = (
-	file: XmlFile | JsonFile,
-	options?: { name?: string; extension?: FileType }
-): void => {
-	let { extension, name, content } = file;
-	if (options) {
-		extension = options.extension ?? extension;
-		name = options.name ?? name;
-	}
-
+export const createFile = (data: {
+	content: string;
+	path?: string;
+	name?: string;
+	extension?: FileType;
+}): string => {
+	const { extension, name, content, path = 'src/examples/' } = data;
 	const fileName = `${name}.${extension}`;
-	fs.writeFileSync(fileName, content);
+	const fullPath = `${path}/${fileName}`;
+	fs.writeFileSync(fullPath, content);
+	return `File created at ${fullPath}`;
 };

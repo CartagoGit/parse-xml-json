@@ -1,27 +1,28 @@
 {
-    "?xml": {
-      "@version": "1.0",
-      "@encoding": "UTF-8"
-    },
-    "library": {
-      "book": [
-        {
-          "title": "El Señor de los Anillos",
-          "author": "J.R.R. Tolkien",
-          "genre": "Fantasía",
-          "price": 29.99
-        },
-        {
-          "title": "Cien años de soledad",
-          "author": "Gabriel García Márquez",
-          "genre": "Realismo mágico",
-          "price": 19.95
-        }
-      ],
-      "magazine": {
-        "title": "National Geographic",
-        "category": "Science",
-        "price": 5.99
-      }
-    }
-  }
+	"xml": {
+		"version": "1.0",
+		"encoding": "UTF-8"
+	},
+  
+	"library": {
+		"book": [
+			{
+				"title": "El Señor de los Anillos",
+				"author": "J.R.R. Tolkien",
+				"genre": "Fantasía",
+				"price": 29.99
+			},
+			{
+				"title": "Cien años de soledad",
+				"author": "Gabriel García Márquez",
+				"genre": "Realismo mágico",
+				"price": 19.95
+			}
+		],
+		"magazine": {
+			"title": "National Geographic",
+			"category": "Science",
+			"price": 5.99
+		}
+	}
+}

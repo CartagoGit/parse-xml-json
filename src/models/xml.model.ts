@@ -1,4 +1,4 @@
-import { getFileText } from '../helpers/files-helpers';
+import { createFile, getFileText } from '../helpers/files-helpers';
 import { patternCommentsXml } from '../helpers/helpers';
 import { FileProps, FileType } from '../interfaces/basic.interface';
 
@@ -69,6 +69,21 @@ export class XmlFile implements XmlProps {
 	} {
 		return XmlHelpers.xmlToJson(this) as any;
 	}
+
+	public createXmlFile(data: { name: string; path?: string }): void {
+		const { name, path } = data;
+		createFile({ content: this.content, name, path, extension: 'xml' });
+	}
+
+	public createJsonFile(data: { name: string; path?: string }): void {
+		const { name, path } = data;
+		createFile({
+			content: JSON.stringify(this.toJson(), null, 2),
+			name,
+			path,
+			extension: 'json',
+		});
+	}
 }
 
 class XmlChild {
@@ -87,9 +102,9 @@ class XmlChild {
 		tag: string;
 		content: string;
 		parent?: XmlFile | XmlChild;
-		level: number;
+		level?: number;
 	}) {
-		let { tag, content, parent, level } = props;
+		let { tag, content, parent, level = 0 } = props;
 		content = content.trim().replace(patternCommentsXml, ''); // Remove comments
 		this.name = tag.split(' ')[0];
 		this.attributes = this._getAttributes(tag);

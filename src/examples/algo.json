@@ -1,0 +1,220 @@
+{
+  "initType": "xml",
+  "xml": {
+    "version": "1.0",
+    "encoding": "UTF-8"
+  },
+  "file": {
+    "name": "example01.xml",
+    "path": "./src/examples/example01.xml",
+    "extension": "xml"
+  },
+  "tags": {
+    "library": [
+      {
+        "isLastTag": false,
+        "book": [
+          {
+            "isLastTag": false,
+            "title": [
+              {
+                "isLastTag": true,
+                "attributes": {
+                  "name": "segunda guerra mundial"
+                },
+                "content": "Malditos bastardos",
+                "isSelfClosing": false
+              }
+            ],
+            "author": [
+              {
+                "isLastTag": true,
+                "content": "Tarantingo",
+                "isSelfClosing": false
+              }
+            ],
+            "genre": [
+              {
+                "isLastTag": true,
+                "content": "Violencia",
+                "isSelfClosing": false
+              }
+            ],
+            "price": [
+              {
+                "isLastTag": true,
+                "content": "29.99",
+                "isSelfClosing": false
+              }
+            ],
+            "book": [
+              {
+                "isLastTag": false,
+                "title": [
+                  {
+                    "isLastTag": true,
+                    "attributes": {
+                      "name": "anillos"
+                    },
+                    "content": "El Señor de los Anillos",
+                    "isSelfClosing": false
+                  }
+                ],
+                "author": [
+                  {
+                    "isLastTag": true,
+                    "content": "Pepote",
+                    "isSelfClosing": false
+                  }
+                ],
+                "genre": [
+                  {
+                    "isLastTag": true,
+                    "content": "Fantasía",
+                    "isSelfClosing": false
+                  }
+                ],
+                "price": [
+                  {
+                    "isLastTag": true,
+                    "content": "299.99",
+                    "isSelfClosing": false
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "isLastTag": false,
+            "title": [
+              {
+                "isLastTag": true,
+                "content": "Cien años de soledad",
+                "isSelfClosing": false
+              }
+            ],
+            "author": [
+              {
+                "isLastTag": true,
+                "content": "Gabriel García Márquez",
+                "isSelfClosing": false
+              }
+            ],
+            "genre": [
+              {
+                "isLastTag": true,
+                "content": "Realismo mágico",
+                "isSelfClosing": false
+              }
+            ],
+            "price": [
+              {
+                "isLastTag": true,
+                "content": "19.95",
+                "isSelfClosing": false
+              }
+            ]
+          }
+        ],
+        "magazine": [
+          {
+            "isLastTag": true,
+            "isSelfClosing": true
+          }
+        ]
+      },
+      {
+        "isLastTag": false,
+        "attributes": {
+          "name": "Academia de la lengua",
+          "otraCosa": "lo que sea",
+          "pepo": 98,
+          "alcahuere": true
+        },
+        "book": [
+          {
+            "isLastTag": false,
+            "title": [
+              {
+                "isLastTag": true,
+                "attributes": {
+                  "name": "anillos"
+                },
+                "content": "CUCU El Señor de los Anillos",
+                "isSelfClosing": false
+              }
+            ],
+            "author": [
+              {
+                "isLastTag": true,
+                "content": "J.R.R. Tolkien",
+                "isSelfClosing": false
+              }
+            ],
+            "genre": [
+              {
+                "isLastTag": true,
+                "content": "Fantasía",
+                "isSelfClosing": false
+              }
+            ],
+            "price": [
+              {
+                "isLastTag": true,
+                "content": "29.99",
+                "isSelfClosing": false
+              }
+            ]
+          },
+          {
+            "isLastTag": false,
+            "title": [
+              {
+                "isLastTag": true,
+                "content": "Cien años de soledad",
+                "isSelfClosing": false
+              }
+            ],
+            "author": [
+              {
+                "isLastTag": true,
+                "content": "Gabriel García Márquez",
+                "isSelfClosing": false
+              }
+            ],
+            "genre": [
+              {
+                "isLastTag": true,
+                "content": "Realismo mágico",
+                "isSelfClosing": false
+              }
+            ],
+            "price": [
+              {
+                "isLastTag": true,
+                "content": "19.95",
+                "isSelfClosing": false
+              }
+            ]
+          }
+        ],
+        "magazine": [
+          {
+            "isLastTag": true,
+            "isSelfClosing": true
+          }
+        ]
+      }
+    ],
+    "category": [
+      {
+        "isLastTag": true,
+        "attributes": {
+          "name": "Science",
+          "year": "1990"
+        },
+        "isSelfClosing": true
+      }
+    ]
+  }
+}
