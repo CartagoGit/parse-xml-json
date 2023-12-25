@@ -6,7 +6,7 @@
   },
   "file": {
     "name": "example01.xml",
-    "path": "./src/examples/example01.xml",
+    "path": "./examples/example01.xml",
     "extension": "xml"
   },
   "tags": {

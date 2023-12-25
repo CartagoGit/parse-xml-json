@@ -70,14 +70,14 @@ export class XmlFile implements XmlProps {
 		return XmlHelpers.xmlToJson(this) as any;
 	}
 
-	public createXmlFile(data: { name: string; path?: string }): void {
+	public createXmlFile(data: { name: string; path?: string }): string {
 		const { name, path } = data;
-		createFile({ content: this.content, name, path, extension: 'xml' });
+		return createFile({ content: this.content, name, path, extension: 'xml' });
 	}
 
-	public createJsonFile(data: { name: string; path?: string }): void {
+	public createJsonFile(data: { name: string; path?: string }): string {
 		const { name, path } = data;
-		createFile({
+		return createFile({
 			content: JSON.stringify(this.toJson(), null, 2),
 			name,
 			path,

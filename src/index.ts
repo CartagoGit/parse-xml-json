@@ -3,7 +3,7 @@ import { JsonFile } from './models/json.model';
 import { XmlFile } from './models/xml.model';
 
 // const xmlFile = helpers.getFileText('./src/examples/example01.xml')
-const xmlFile = new XmlFile({ src: './src/examples/example01.xml' });
+const xmlFile = new XmlFile({ src: './examples/example01.xml' });
 // const jsonFile = new JsonFile({ src: './src/examples/example01.json' });
 // console.log((jsonFile.content));
 // const xmlFile2 = new XmlFile({
