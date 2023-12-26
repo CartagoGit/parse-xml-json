@@ -25,10 +25,11 @@ const xmlFile = new XmlFile({ src: './examples/example01.xml' });
 // console.log(xmlFile2.children?.[0]?.children?.[4]);
 // console.log(xmlFile2.children?.[0]);
 // xmlFile.isXmlFile();
-// console.log(xmlFile);
+console.log(xmlFile);
 // console.log(xmlFile.content);
-console.log(xmlFile.version);
-console.log(xmlFile.encoding);
+xmlFile.update({ content: '<pepe posi="es algo mas">El resto tambien?</pepe><code algo="pozi"/>' });
+console.log(xmlFile.children[1].getCompleteContent());
+// console.log(xmlFile);
 // console.log(xmlFile.createXmlFile({ name:'algo'}));
 // console.log(xmlFile.createJsonFile({ name:'algo'}));
 

@@ -22,6 +22,6 @@ export interface FileProps<P, C> {
 	extension: string;
 	type: FileType;
 	children: C[];
-	parent: P | C | null;
+	parent?: P | C | null;
 	level: number;
 }

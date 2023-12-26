@@ -19,7 +19,6 @@ export class XmlFile implements XmlProps {
 		return this._fileName;
 	}
 	private _content: string;
-	public readonly initContent: string;
 	get content(): string {
 		return this._content;
 	}
@@ -37,8 +36,10 @@ export class XmlFile implements XmlProps {
 	public readonly version: string;
 	public readonly xmlTag: string | null = null;
 	public readonly encoding;
-	public readonly children: XmlChild[] = [];
-	public readonly parent: XmlFile | null = null;
+	private _children: XmlChild[] = [];
+	get children(): XmlChild[] {
+		return [...this._children];
+	}
 	public readonly level = 0;
 
 	// ANCHOR - Constructor
@@ -48,17 +49,16 @@ export class XmlFile implements XmlProps {
 		if (!!text) {
 			text = text.trim().replace(patternCommentsXml, ''); // Remove comments
 		}
-		this._src = text ? 'Test xml text' : src ?? '';
+		this._src = text ? 'xmlFromText' : src ?? '';
 		this._content =
 			text ??
 			getFileText(this.src).trim().replace(patternCommentsXml, ''); // Remove comments
-		this.initContent = this._content;
 		this._fileName = this.src.split('/').pop() || '';
-		[this._name, this._extension] = this.fileName.split('.');
+		[this._name, this._extension = 'xml'] = this.fileName.split('.');
 		this.xmlTag = this._getXmlTag();
 		this.version = this._getVersionXml();
 		this.encoding = this._getEncodingXml();
-		this.children = XmlHelpers.getChildrenTags(this);
+		this._children = XmlHelpers.getChildrenTags(this);
 	}
 
 	// ANCHOR - Methods
@@ -113,9 +113,16 @@ export class XmlFile implements XmlProps {
 			extension: 'json',
 		});
 	}
+
+	public update(data: { content: string }): void {
+		const { content } = data;
+		const newXmlFile = new XmlFile({ text: content });
+		Object.assign(this, newXmlFile);
+	}
 }
 
 class XmlChild {
+	public readonly id: number;
 	public readonly name: string;
 	public readonly content: string | null;
 	public readonly children: XmlChild[] | null = null;
@@ -131,11 +138,14 @@ class XmlChild {
 		tag: string;
 		content: string;
 		parent?: XmlFile | XmlChild;
+		id: number;
 		level?: number;
 	}) {
-		let { tag, content, parent, level = 0 } = props;
+		let { tag, content, parent, level = 0, id } = props;
+		this.id = id;
 		content = content.trim().replace(patternCommentsXml, ''); // Remove comments
 		this.name = tag.split(' ')[0];
+		console.log({ tag, content });
 		this.attributes = this._getAttributes(tag);
 		this.isSelfClosing = content.endsWith('/>');
 
@@ -182,13 +192,32 @@ class XmlChild {
 	public toJson(): Record<string, any> {
 		return XmlHelpers.xmlToJson(this);
 	}
+
+	public getCompleteContent(): string {
+		let content = this.openTag;
+		if (this.isSelfClosing) return content;
+		if (this.children) {
+			for (const child of this.children) {
+				content += child.getCompleteContent();
+			}
+		} else {
+			content += this.content ?? '';
+		}
+		content += this.closeTag ?? '';
+		return content;
+	}
+
+	// public update(data: { content: string }): void {
+	// 	const { content } = data;
+	// 	const newXmlChild = new XmlChild({ text: content });
+	// 	Object.assign(this, newXmlChild);
+	// }
 }
 
 class XmlHelpers {
 	// ANCHOR : Static Methods
 	public static getChildrenTags(xmlItem: XmlFile | XmlChild): XmlChild[] {
 		const { content, level } = xmlItem;
-		console.log(1, { content, level });
 		if (!content) return [];
 		const xmlTag = xmlItem instanceof XmlFile ? xmlItem.xmlTag : null;
 		let text = content
@@ -208,6 +237,7 @@ class XmlHelpers {
 						content: openTag,
 						parent: xmlItem,
 						level: level + 1,
+						id: tags.length + 1,
 					})
 				);
 				text = text.slice(indexEnd + 1);
@@ -241,6 +271,7 @@ class XmlHelpers {
 							content: textTag,
 							parent: xmlItem,
 							level: level + 1,
+							id: tags.length + 1,
 						});
 						tags.push(xmlChild);
 						break;
