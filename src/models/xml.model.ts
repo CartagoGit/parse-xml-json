@@ -145,26 +145,26 @@ class XmlChild {
 		this.id = id;
 		content = content.trim().replace(patternCommentsXml, ''); // Remove comments
 		this.name = tag.split(' ')[0];
-		console.log({ tag, content });
 		this.attributes = this._getAttributes(tag);
 		this.isSelfClosing = content.endsWith('/>');
-
+		
 		this.openTag = this.isSelfClosing ? content : `<${tag}>`;
 		this.closeTag = this.isSelfClosing ? null : `</${this.name}>`;
 		this.parent = parent ?? null;
 		this.content = this.isSelfClosing
-			? null
+		? null
 			: content.replaceAll(/></g, '>\r\n<');
-		this.level = level;
-
-		if (
-			!this.isSelfClosing &&
-			content.includes('<') &&
-			content.trim().length > 0
-		) {
-			this.children = XmlHelpers.getChildrenTags(this);
-		}
-		this.isLastTag = !this.children || this.children.length === 0;
+			this.level = level;
+			
+			if (
+				!this.isSelfClosing &&
+				content.includes('<') &&
+				content.trim().length > 0
+				) {
+					this.children = XmlHelpers.getChildrenTags(this);
+				}
+				this.isLastTag = !this.children || this.children.length === 0;
+				console.log(this);
 	}
 
 	// ANCHOR - Methods
@@ -207,10 +207,18 @@ class XmlChild {
 		return content;
 	}
 
+	// TODO
 	// public update(data: { content: string }): void {
 	// 	const { content } = data;
-	// 	const newXmlChild = new XmlChild({ text: content });
-	// 	Object.assign(this, newXmlChild);
+	// 	this.parent?.
+		
+	// }
+
+	// public updateChild = (data: { id: number; content: string }): void => {
+	// 	const { id, content } = data;
+	// 	const child = this.children?.find((child) => child.id === id);
+	// 	if (!child) return;
+	// 	child.update({ content });
 	// }
 }
 
