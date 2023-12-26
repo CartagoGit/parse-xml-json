@@ -26,9 +26,11 @@ const xmlFile = new XmlFile({ src: './examples/example01.xml' });
 // console.log(xmlFile2.children?.[0]);
 // xmlFile.isXmlFile();
 // console.log(xmlFile);
-console.log(xmlFile.toJson());
-console.log(xmlFile.createXmlFile({ name:'algo'}));
-console.log(xmlFile.createJsonFile({ name:'algo'}));
+// console.log(xmlFile.content);
+console.log(xmlFile.version);
+console.log(xmlFile.encoding);
+// console.log(xmlFile.createXmlFile({ name:'algo'}));
+// console.log(xmlFile.createJsonFile({ name:'algo'}));
 
 // console.log(xmlFile.toJson().tags.library[0].book[0]);
 // console.log(xmlFile.toJson().tags.library[0].book[0]);

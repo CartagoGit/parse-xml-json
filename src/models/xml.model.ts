@@ -10,11 +10,29 @@ interface XmlProps extends FileProps<XmlFile, XmlChild> {
 
 export class XmlFile implements XmlProps {
 	// ANCHOR - Properties
-	public readonly name: string;
-	public readonly fileName: string;
-	public readonly content: string;
-	public readonly src: string;
-	public readonly extension: string;
+	private _name: string;
+	get name(): string {
+		return this._name;
+	}
+	private _fileName: string;
+	get fileName(): string {
+		return this._fileName;
+	}
+	private _content: string;
+	public readonly initContent: string;
+	get content(): string {
+		return this._content;
+	}
+	private _src: string;
+	get src(): string {
+		return this._src;
+	}
+
+	private _extension: string;
+	get extension(): string {
+		return this._extension;
+	}
+
 	public readonly type: FileType = 'xml';
 	public readonly version: string;
 	public readonly xmlTag: string | null = null;
@@ -30,12 +48,13 @@ export class XmlFile implements XmlProps {
 		if (!!text) {
 			text = text.trim().replace(patternCommentsXml, ''); // Remove comments
 		}
-		this.src = text ? 'Test xml text' : src ?? '';
-		this.content =
+		this._src = text ? 'Test xml text' : src ?? '';
+		this._content =
 			text ??
 			getFileText(this.src).trim().replace(patternCommentsXml, ''); // Remove comments
-		this.fileName = this.src.split('/').pop() || '';
-		[this.name, this.extension] = this.fileName.split('.');
+		this.initContent = this._content;
+		this._fileName = this.src.split('/').pop() || '';
+		[this._name, this._extension] = this.fileName.split('.');
 		this.xmlTag = this._getXmlTag();
 		this.version = this._getVersionXml();
 		this.encoding = this._getEncodingXml();
@@ -45,19 +64,19 @@ export class XmlFile implements XmlProps {
 	// ANCHOR - Methods
 	private _getXmlTag(): string | null {
 		const xmlTagPattern = /<\?xml.*\?>/;
-		const xmlTag = this.content.match(xmlTagPattern)?.[0] ?? null;
+		const xmlTag = this._content.match(xmlTagPattern)?.[0] ?? null;
 		return xmlTag;
 	}
 
 	private _getVersionXml(): string {
 		const versionPattern = /version\s*=\s*"(.*?)"/;
-		const version = this.xmlTag?.match(versionPattern)?.[1] ?? 'Unknown';
+		const version = this.xmlTag?.match(versionPattern)?.[1] ?? '1.0';
 		return version;
 	}
 
 	private _getEncodingXml(): string | null {
 		const encodingPattern = /encoding\s*=\s*"(.*?)"/;
-		const encoding = this.xmlTag?.match(encodingPattern)?.[1] ?? null;
+		const encoding = this.xmlTag?.match(encodingPattern)?.[1] ?? 'utf-8';
 		return encoding;
 	}
 
@@ -67,12 +86,22 @@ export class XmlFile implements XmlProps {
 		file: { name: string; path: string; extension: string };
 		tags: Record<string, any[]>;
 	} {
-		return XmlHelpers.xmlToJson(this) as any;
+		return XmlHelpers.xmlToJson(this) as {
+			initType: string;
+			xml: { version: string; encoding: string };
+			file: { name: string; path: string; extension: string };
+			tags: Record<string, any[]>;
+		};
 	}
 
 	public createXmlFile(data: { name: string; path?: string }): string {
 		const { name, path } = data;
-		return createFile({ content: this.content, name, path, extension: 'xml' });
+		return createFile({
+			content: this.content,
+			name,
+			path,
+			extension: 'xml',
+		});
 	}
 
 	public createJsonFile(data: { name: string; path?: string }): string {
@@ -159,6 +188,7 @@ class XmlHelpers {
 	// ANCHOR : Static Methods
 	public static getChildrenTags(xmlItem: XmlFile | XmlChild): XmlChild[] {
 		const { content, level } = xmlItem;
+		console.log(1, { content, level });
 		if (!content) return [];
 		const xmlTag = xmlItem instanceof XmlFile ? xmlItem.xmlTag : null;
 		let text = content
