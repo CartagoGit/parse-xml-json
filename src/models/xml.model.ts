@@ -115,6 +115,8 @@ export class XmlFile implements XmlProps {
 	}
 
 	public update(data: { content: string }): void {
+		// TODO Esto no puede ser asi, ya que si se reace el elemento, se pierde la referencia de todos los hijos
+		//TODO  esto hace inutil las id de los hijos
 		const { content } = data;
 		const newXmlFile = new XmlFile({ text: content });
 		Object.assign(this, newXmlFile);
