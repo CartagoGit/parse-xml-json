@@ -45,6 +45,7 @@ export class XmlFile implements XmlProps {
 	// ANCHOR - Constructor
 	// Can be a source for a file or a string text to parse
 	constructor(data: { src?: string; text?: string }) {
+		// TODO REPLANTEAR LA FORMA DE HACER ESTO
 		let { src, text } = data;
 		if (!!text) {
 			text = text.trim().replace(patternCommentsXml, ''); // Remove comments
