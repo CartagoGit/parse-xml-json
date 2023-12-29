@@ -10,36 +10,17 @@ interface XmlProps extends FileProps<XmlFile, XmlChild> {
 
 export class XmlFile implements XmlProps {
 	// ANCHOR - Properties
-	private _name: string;
-	get name(): string {
-		return this._name;
-	}
-	private _fileName: string;
-	get fileName(): string {
-		return this._fileName;
-	}
-	private _content: string;
-	get content(): string {
-		return this._content;
-	}
-	private _src: string;
-	get src(): string {
-		return this._src;
-	}
-
-	private _extension: string;
-	get extension(): string {
-		return this._extension;
-	}
+	public name: string;
+	public fileName: string;
+	public content: string;
+	public src: string;
+	public extension: string;
 
 	public readonly type: FileType = 'xml';
 	public readonly version: string;
 	public readonly xmlTag: string | null = null;
 	public readonly encoding;
-	private _children: XmlChild[] = [];
-	get children(): XmlChild[] {
-		return [...this._children];
-	}
+	public children: XmlChild[] = [];
 	public readonly level = 0;
 
 	// ANCHOR - Constructor
@@ -50,16 +31,16 @@ export class XmlFile implements XmlProps {
 		if (!!text) {
 			text = text.trim().replace(patternCommentsXml, ''); // Remove comments
 		}
-		this._src = text ? 'xmlFromText' : src ?? '';
-		this._content =
+		this.src = text ? 'xmlFromText' : src ?? '';
+		this.content =
 			text ??
 			getFileText(this.src).trim().replace(patternCommentsXml, ''); // Remove comments
-		this._fileName = this.src.split('/').pop() || '';
-		[this._name, this._extension = 'xml'] = this.fileName.split('.');
+		this.fileName = this.src.split('/').pop() || '';
+		[this.name, this.extension = 'xml'] = this.fileName.split('.');
 		this.xmlTag = this._getXmlTag();
 		this.version = this._getVersionXml();
 		this.encoding = this._getEncodingXml();
-		this._children = XmlHelpers.getChildrenTags(this);
+		this.children = XmlHelpers.getChildrenTags(this);
 	}
 
 	// ANCHOR - Methods
@@ -125,17 +106,17 @@ export class XmlFile implements XmlProps {
 }
 
 class XmlChild {
-	public readonly id: number;
-	public readonly name: string;
-	public readonly content: string | null;
-	public readonly children: XmlChild[] | null = null;
-	public readonly parent: XmlFile | XmlChild | null = null;
-	public readonly level;
-	public readonly openTag: string;
-	public readonly closeTag: string | null = null;
-	public readonly isSelfClosing: boolean;
-	public readonly attributes: Record<string, any> | null = null;
-	public readonly isLastTag: boolean;
+	public id: number;
+	public name: string;
+	public content: string | null;
+	public children: XmlChild[] | null = null;
+	public parent: XmlFile | XmlChild | null = null;
+	public level;
+	public openTag: string;
+	public closeTag: string | null = null;
+	public isSelfClosing: boolean;
+	public attributes: Record<string, any> | null = null;
+	public isLastTag: boolean;
 
 	constructor(props: {
 		tag: string;
@@ -150,24 +131,24 @@ class XmlChild {
 		this.name = tag.split(' ')[0];
 		this.attributes = this._getAttributes(tag);
 		this.isSelfClosing = content.endsWith('/>');
-		
+
 		this.openTag = this.isSelfClosing ? content : `<${tag}>`;
 		this.closeTag = this.isSelfClosing ? null : `</${this.name}>`;
 		this.parent = parent ?? null;
 		this.content = this.isSelfClosing
-		? null
+			? null
 			: content.replaceAll(/></g, '>\r\n<');
-			this.level = level;
-			
-			if (
-				!this.isSelfClosing &&
-				content.includes('<') &&
-				content.trim().length > 0
-				) {
-					this.children = XmlHelpers.getChildrenTags(this);
-				}
-				this.isLastTag = !this.children || this.children.length === 0;
-				console.log(this);
+		this.level = level;
+
+		if (
+			!this.isSelfClosing &&
+			content.includes('<') &&
+			content.trim().length > 0
+		) {
+			this.children = XmlHelpers.getChildrenTags(this);
+		}
+		this.isLastTag = !this.children || this.children.length === 0;
+		console.log(this);
 	}
 
 	// ANCHOR - Methods
@@ -210,11 +191,46 @@ class XmlChild {
 		return content;
 	}
 
+	// ANCHOR - Attributes Methods
+	public addAttribute(data: {
+		attributeName: string;
+		newValue: string | number | boolean;
+	}): void {
+		const { attributeName, newValue } = data;
+		if (!this.attributes) this.attributes = {};
+		this.attributes[attributeName] = newValue;
+		this._rebuildOpenTag();
+	}
+
+	public removeAttribute(data: { attributeName: string }): void {
+		const { attributeName } = data;
+		if (!this.attributes) return;
+		delete this.attributes[attributeName];
+		this._rebuildOpenTag()
+	}
+
+	public changeAttributes(data: { attributes: Record<string, any> }): void {
+		const { attributes } = data;
+		this.attributes = { ...attributes };
+		this._rebuildOpenTag();
+	}
+
+	private _rebuildOpenTag(): void {
+		let openTag = `<${this.name}`;
+		if (this.attributes) {
+			for (const [key, value] of Object.entries(this.attributes)) {
+				openTag += ` ${key}="${value}"`;
+			}
+		}
+		openTag += this.isSelfClosing ? '/>' : '>';
+		this.openTag = openTag;
+	}
+
 	// TODO
 	// public update(data: { content: string }): void {
 	// 	const { content } = data;
 	// 	this.parent?.
-		
+
 	// }
 
 	// public updateChild = (data: { id: number; content: string }): void => {
